@@ -1,0 +1,35 @@
+name: CI/CD
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Lint & Test
+        run: |
+          flake8 src/ tests/
+          pytest tests/
+      - name: DVC Pull
+        run: dvc pull -r s3
+      - name: Build & Push Docker
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          registry: ${{ secrets.ECR_REGISTRY }}
+      - name: Terraform Init & Apply
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+        run: |
+          cd infra/terraform/environments/prod
+          terraform init
+          terraform apply -auto-approve
+      - name: Trigger SageMaker Pipeline
+        run: python src/pipelines/pipeline.py

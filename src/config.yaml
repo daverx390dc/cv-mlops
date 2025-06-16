@@ -1,0 +1,9 @@
+aws:
+  region: us-east-1
+  raw_bucket: cv-raw
+  processed_bucket: cv-processed
+  model_bucket: cv-models
+train:
+  epochs: 5
+  batch_size: 32
+  lr: 1e-4

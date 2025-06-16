@@ -1,0 +1,9 @@
+boto3
+opencv-python-headless
+torch torchvision
+fastapi uvicorn
+sagemaker
+dvc
+mlflow
+pytest
+flake8
